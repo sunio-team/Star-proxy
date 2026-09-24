@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Star Proxy</title>
+<link rel="icon" href="/logo.svg">
+<style>
+:root{--bg:#050403;--panel:#100d05;--line:#2a2210;--gold:#FFD21F;--gold2:#c98a00;--txt:#f6efd6;--mut:#9c9270;--ok:#22c55e;--bad:#ef4444}
+*{box-sizing:border-box}
+html,body{margin:0;background:radial-gradient(1000px 500px at 50% -10%,#2b2100 0,var(--bg) 60%) fixed;color:var(--txt);font-family:Vazirmatn,Tahoma,"Segoe UI",sans-serif;min-height:100%}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;align-items:center;gap:12px;padding:8px 0 22px;border-bottom:1px solid var(--line)}
+header img{width:46px;height:46px}
+header h1{margin:0;font-size:22px;letter-spacing:.5px;color:var(--gold);text-shadow:0 0 18px #ffd21f66}
+header .sp{flex:1}
+button,input{font:inherit;color:inherit}
+input{background:#0a0803;border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;outline:none}
+input:focus{border-color:var(--gold);box-shadow:0 0 0 3px #ffd21f22}
+.btn{border:0;border-radius:10px;padding:11px 18px;cursor:pointer;font-weight:700;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1300}
+.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line);font-weight:500}
+.btn.sm{padding:7px 12px;font-size:13px}
+.btn.ok{background:var(--ok);color:#03210f}
+.btn.del{color:var(--bad);border-color:#4a1d1d}
+.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.stats{display:flex;gap:28px;padding:22px 0;flex-wrap:wrap}
+.stats b{display:block;font-size:30px;color:var(--gold);line-height:1.1}
+.stats span{color:var(--mut);font-size:13px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--bad);margin-left:6px}
+.dot.on{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:18px}
+.box h2{margin:0 0 14px;font-size:16px;color:var(--gold)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1 1 140px}
+.row .btn{flex:0 0 auto}
+.item{display:flex;gap:12px;align-items:center;padding:14px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.item:first-of-type{border-top:0}
+.item .nm{flex:1 1 160px;min-width:0}
+.item .nm b{display:block}
+.item .nm small{color:var(--mut)}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mut);margin-right:6px}
+.tag.on{color:var(--ok);border-color:#14532d}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.empty{color:var(--mut);text-align:center;padding:22px 0}
+.login{max-width:340px;margin:12vh auto 0;text-align:center}
+.login img{width:110px;margin-bottom:6px}
+.login .box{display:grid;gap:10px;text-align:right}
+.err{color:var(--bad);min-height:20px;font-size:13px}
+.modal{position:fixed;inset:0;background:#000000cc;display:flex;align-items:center;justify-content:center;padding:20px;z-index:9}
+.modal .card{background:var(--panel);border:1px solid var(--gold2);border-radius:20px;padding:26px 22px;max-width:400px;text-align:center;box-shadow:0 0 60px #ffd21f22;animation:pop .35s ease}
+.modal img{width:84px}
+.modal h3{margin:8px 0 6px;color:var(--gold);font-size:19px}
+.modal p{margin:6px 0;line-height:1.9;color:var(--txt)}
+.modal .by{color:var(--mut);font-size:14px}
+.modal .btn{margin-top:14px;width:100%;font-size:16px}
+@keyframes pop{from{transform:scale(.92);opacity:0}}
+@media(prefers-reduced-motion:reduce){.modal .card{animation:none}}
+.hide{display:none!important}
+[dir=ltr]{direction:ltr;unicode-bidi:plaintext}
+</style>
+</head>
+<body>
+<div id="login" class="login hide">
+  <img src="/logo.svg" alt="Star Proxy">
+  <h1 style="color:var(--gold);margin:0 0 18px">Star Proxy</h1>
+  <div class="box">
+    <input id="u" placeholder="نام کاربری" autocomplete="username" dir="ltr">
+    <input id="p" type="password" placeholder="رمز عبور" autocomplete="current-password" dir="ltr">
+    <div class="err" id="err"></div>
+    <button class="btn" id="go">ورود</button>
+  </div>
+</div>
+
+<div id="app" class="wrap hide">
+  <header>
+    <img src="/logo.svg" alt="">
+    <h1>Star Proxy</h1><div class="sp"></div>
+    <button class="btn ghost sm" id="out">خروج</button>
+  </header>
+  <div class="stats">
+    <div><b id="s1">0</b><span>کل پروکسی‌ها</span></div>
+    <div><b id="s2">0</b><span>فعال</span></div>
+    <div><b style="font-size:16px;padding-top:12px"><i class="dot" id="dot"></i><span id="st" style="color:var(--txt);font-size:16px">...</span></b><span>وضعیت سرویس</span></div>
+  </div>
+  <div class="box">
+    <h2>ساخت پروکسی جدید</h2>
+    <div class="row">
+      <input id="nn" placeholder="نام (مثلاً کاربر ۱)">
+      <input id="dd" type="number" min="0" placeholder="مدت به روز (خالی = نامحدود)">
+      <button class="btn" id="mk">ساخت</button>
+    </div>
+  </div>
+  <div class="box"><h2>پروکسی‌ها</h2><div id="list"></div></div>
+  <div class="box">
+    <h2>تنظیمات اتصال</h2>
+    <p style="color:var(--mut);margin:0 0 12px;font-size:13px;line-height:1.8">آدرس و پورت را از بخش TCP Proxy در Railway کپی کنید.</p>
+    <div class="row">
+      <input id="h" placeholder="host (مثلاً xxx.proxy.rlwy.net)" dir="ltr">
+      <input id="pt" placeholder="port" dir="ltr">
+      <input id="dm" placeholder="دامنه Fake-TLS" dir="ltr">
+      <button class="btn ghost" id="sv">ذخیره</button>
+    </div>
+  </div>
+</div>
+
+<div id="welcome" class="modal hide">
+  <div class="card">
+    <img src="/logo.svg" alt="">
+    <h3>به سرویس star proxy خوش آمدید</h3>
+    <p class="by">طراحی شده توسط @sunio_team تلگرام</p>
+    <p>این پنل تا ۳۰ روز پس از راه اندازی فعال است</p>
+    <p>و به دلایل هاستینگ Railway بعد ۳۰ روز غیرفعال خواهد شد</p>
+    <button class="btn ok" id="okb">باشه</button>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),show=(s,v)=>$(s).classList.toggle('hide',!v);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function api(u,m='GET',b){
+  const r=await fetch(u,{method:m,headers:{'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined});
+  if(r.status===401&&u!=='/api/login'){gate();throw 0}
+  return r.json();
+}
+function gate(){show('#app',0);show('#login',1)}
+function draw(s){
+  show('#login',0);show('#app',1);
+  $('#s1').textContent=s.proxies.length;
+  $('#s2').textContent=s.proxies.filter(p=>p.active).length;
+  $('#dot').className='dot'+(s.running?' on':'');
+  $('#st').textContent=s.running?'در حال اجرا':'متوقف';
+  if(document.activeElement.tagName!=='INPUT'){$('#h').value=s.host;$('#pt').value=s.port;$('#dm').value=s.domain}
+  $('#list').innerHTML=s.proxies.length?s.proxies.map(p=>{
+    const exp=p.expires?new Date(p.expires).toLocaleDateString('fa-IR'):'نامحدود';
+    return `<div class="item"><div class="nm"><b>${esc(p.name)}</b><small>انقضا: ${exp}</small></div>
+    <span class="tag ${p.active?'on':''}">${p.active?'فعال':'غیرفعال'}</span>
+    <div class="acts">
+      <button class="btn sm" data-c="${esc(p.link)}">کپی لینک</button>
+      <a class="btn ghost sm" style="text-decoration:none" href="${esc(p.web)}" target="_blank">افزودن به تلگرام</a>
+      <button class="btn ghost sm" data-t="${p.id}">${p.enabled?'غیرفعال‌سازی':'فعال‌سازی'}</button>
+      <button class="btn ghost sm del" data-d="${p.id}">حذف</button>
+    </div></div>`}).join(''):'<div class="empty">هنوز پروکسی‌ای نساخته‌اید</div>';
+  if(!s.host||!s.port)$('#list').insertAdjacentHTML('afterbegin','<div class="err">اول آدرس و پورت را در تنظیمات اتصال وارد کنید.</div>');
+}
+async function load(){
+  try{const s=await api('/api/state');draw(s);
+    if(!localStorage.getItem('sp_welcome'))show('#welcome',1)}catch(e){}
+}
+$('#okb').onclick=()=>{localStorage.setItem('sp_welcome','1');$('#welcome').remove()};
+$('#go').onclick=async()=>{
+  const r=await api('/api/login','POST',{user:$('#u').value,pass:$('#p').value});
+  r.ok?load():$('#err').textContent='نام کاربری یا رمز عبور اشتباه است';
+};
+$('#p').onkeydown=e=>e.key==='Enter'&&$('#go').click();
+$('#out').onclick=async()=>{await api('/api/logout','POST');gate()};
+$('#mk').onclick=async()=>{draw(await api('/api/proxies','POST',{name:$('#nn').value||'proxy',days:$('#dd').value}));$('#nn').value=$('#dd').value=''};
+$('#sv').onclick=async()=>{draw(await api('/api/settings','POST',{host:$('#h').value,port:$('#pt').value,domain:$('#dm').value}))};
+$('#list').onclick=async e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.c){try{await navigator.clipboard.writeText(b.dataset.c)}catch{prompt('کپی کنید:',b.dataset.c)}b.textContent='کپی شد ✓';setTimeout(()=>b.textContent='کپی لینک',1500)}
+  else if(b.dataset.t)draw(await api('/api/proxies/'+b.dataset.t+'/toggle','POST'));
+  else if(b.dataset.d&&confirm('حذف شود؟'))draw(await api('/api/proxies/'+b.dataset.d,'DELETE'));
+};
+load();setInterval(()=>{if($('#app').offsetParent)api('/api/state').then(draw).catch(()=>{})},15000);
+</script>
+</body>
+</html>
